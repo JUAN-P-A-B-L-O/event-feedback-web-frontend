@@ -94,12 +94,17 @@ não reporte lint como executado sem uma ferramenta configurada.
 
 O Dockerfile compila com Node 22 e serve o build com Nginx sem root, na porta
 8080. `docker compose up --build -d --wait` sobe somente o frontend, por padrão
-em `http://localhost:15173` (`FRONTEND_PORT` altera a porta). `nginx.conf` é um
-template processado na inicialização: `API_UPSTREAM` configura opcionalmente a
+em `http://localhost:5173` (`FRONTEND_PORT` altera a porta). Vite e Docker são
+modos alternativos; não execute os dois nessa porta simultaneamente. O Compose
+requer a rede externa `event-feedback-dev`, com os aliases `ef-organizer:8080`
+e `ef-survey:8087` para os backends. Consulte o README para conectar os serviços.
+`nginx.conf` é um template processado na inicialização: `API_UPSTREAM` configura opcionalmente a
 origem de uma API unificada, sem caminho nem barra final. `ORGANIZER_UPSTREAM`
 e `SURVEY_UPSTREAM` permitem configurar os serviços separados e têm prioridade
-nas respectivas rotas. Sem upstream configurado para uma rota, `/api/`
-retorna 503 e os arquivos estáticos continuam disponíveis. A resolução do
+nas respectivas rotas; o Compose usa os aliases acima por padrão. Sem backend
+acessível, a API retorna erro de gateway e os arquivos estáticos continuam
+disponíveis. Rotas desconhecidas sem fallback configurado retornam 404; nunca
+encaminhe erros da API ao fallback SPA. A resolução do
 hostname da API ocorre por requisição, sem bloquear a inicialização do Nginx.
 Preserve o fallback da SPA, inclusive `/s/`, o tratamento de privacidade e o
 limite de requisições das rotas públicas. O healthcheck cobre o servidor

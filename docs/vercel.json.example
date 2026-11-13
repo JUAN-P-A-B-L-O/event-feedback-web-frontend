@@ -1,0 +1,28 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "vite",
+  "installCommand": "npm ci",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "headers": [
+    {
+      "source": "/api/:path*",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" },
+        { "key": "CDN-Cache-Control", "value": "no-store" },
+        { "key": "Vercel-CDN-Cache-Control", "value": "no-store" },
+        { "key": "x-vercel-enable-rewrite-caching", "value": "0" }
+      ]
+    },
+    {
+      "source": "/s/:path*",
+      "headers": [{ "key": "Referrer-Policy", "value": "no-referrer" }]
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/auth/:path*", "destination": "https://organizer.example.com/api/auth/:path*" },
+    { "source": "/api/events/:path*", "destination": "https://survey.example.com/api/events/:path*" },
+    { "source": "/api/public/:path*", "destination": "https://survey.example.com/api/public/:path*" },
+    { "source": "/((?!api(?:/|$)).*)", "destination": "/index.html" }
+  ]
+}

@@ -2,8 +2,15 @@ services:
   frontend:
     build: .
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-15173}:8080"
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:8080"
     environment:
       API_UPSTREAM: ${API_UPSTREAM:-}
-      ORGANIZER_UPSTREAM: ${ORGANIZER_UPSTREAM:-}
-      SURVEY_UPSTREAM: ${SURVEY_UPSTREAM:-}
+      ORGANIZER_UPSTREAM: ${ORGANIZER_UPSTREAM:-http://ef-organizer:8080}
+      SURVEY_UPSTREAM: ${SURVEY_UPSTREAM:-http://ef-survey:8087}
+    networks:
+      - event-feedback-dev
+
+networks:
+  event-feedback-dev:
+    external: true
+    name: event-feedback-dev
