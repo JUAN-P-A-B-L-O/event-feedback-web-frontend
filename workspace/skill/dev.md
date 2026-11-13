@@ -93,13 +93,20 @@ Para um teste específico, use, por exemplo,
 não reporte lint como executado sem uma ferramenta configurada.
 
 O Dockerfile compila com Node 22 e serve o build com Nginx sem root, na porta
-8080. `docker compose up --build -d --wait` sobe somente o frontend, por padrão
-em `http://localhost:15173` (`FRONTEND_PORT` altera a porta). `nginx.conf` é um
+8080. `docker compose up --build -d --no-deps --force-recreate --wait frontend`
+sobe somente o frontend em `http://localhost:5173`, com porta fixa. Confira
+antes se 5173 está livre ou pertence ao próprio frontend. O Compose usa como
+rede externa a rede existente `event-feedback_default` (`BACKEND_NETWORK`
+permite ajustar o nome), com aliases estáveis `organizer-service:8080` e
+`survey-service:8087`. Não conecte backends manualmente nem modifique outros
+projetos; a ausência da rede/aliases deve ser reportada como bloqueio.
+`nginx.conf` é um
 template processado na inicialização: `API_UPSTREAM` configura opcionalmente a
 origem de uma API unificada, sem caminho nem barra final. `ORGANIZER_UPSTREAM`
 e `SURVEY_UPSTREAM` permitem configurar os serviços separados e têm prioridade
-nas respectivas rotas. Sem upstream configurado para uma rota, `/api/`
-retorna 503 e os arquivos estáticos continuam disponíveis. A resolução do
+nas respectivas rotas. O Compose configura os dois aliases por padrão.
+Falhas de conexão retornam erro de gateway; rotas de API desconhecidas, sem
+fallback configurado, retornam 404. Os arquivos estáticos continuam disponíveis. A resolução do
 hostname da API ocorre por requisição, sem bloquear a inicialização do Nginx.
 Preserve o fallback da SPA, inclusive `/s/`, o tratamento de privacidade e o
 limite de requisições das rotas públicas. O healthcheck cobre o servidor

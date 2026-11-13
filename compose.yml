@@ -1,9 +1,18 @@
+name: event-feedback-web-frontend
+
 services:
   frontend:
     build: .
     ports:
-      - "127.0.0.1:${FRONTEND_PORT:-15173}:8080"
+      - "127.0.0.1:5173:8080"
     environment:
       API_UPSTREAM: ${API_UPSTREAM:-}
-      ORGANIZER_UPSTREAM: ${ORGANIZER_UPSTREAM:-}
-      SURVEY_UPSTREAM: ${SURVEY_UPSTREAM:-}
+      ORGANIZER_UPSTREAM: ${ORGANIZER_UPSTREAM:-http://organizer-service:8080}
+      SURVEY_UPSTREAM: ${SURVEY_UPSTREAM:-http://survey-service:8087}
+    networks:
+      - backend
+
+networks:
+  backend:
+    external: true
+    name: ${BACKEND_NETWORK:-event-feedback_default}
